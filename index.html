@@ -6,22 +6,25 @@
     <title>Particles</title>
     <meta charset="UTF-8">
     <meta name="description" content=" ">
-    <link rel="icon" href="icon-man.ico">
 
     <!-- Style -->
     <meta name="viewport" content="width=device-width,initial-scale=1">
-	<link rel="stylesheet" href="style_landscape.css" media="only screen and (min-width: 501px)">
-	<link rel="stylesheet" href="style_portrait.css" media="only screen and (max-width: 500px)">
-	<link rel="stylesheet" href="style_print.css" media="print">
-    <script src="modernizr-1.5.js"></script>
 
 </head>
 <body>
 
     <main>
+
+        <div>
+            <label for="">Number of particles to spawn:</label>
+            <input id='pCnt' type="text" maxlength='4' size='4'>
+            <button id='start'>Start</button>
+        </div>
+        
         <canvas id="window"></canvas>
 
-        <script src='./src/particles.js'></script>
+        <script type='module' src='./src/particlesimulator.js'></script>
+
     </main>
 
 </body>
