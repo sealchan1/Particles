@@ -74,7 +74,7 @@ class ParticleSimulator {
 
         // Loop goes here
         // Problem:  The click for stopping the sim isn't happening...is that because the event can't be called because this loop has all the threads?
-        while(this.run) 
+        while(false) // this.run
         {
             if(this.tick) {
 
