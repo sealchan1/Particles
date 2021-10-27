@@ -1,9 +1,12 @@
 export default class Particle {
 
-    constructor(x, y) {
-
+    constructor(x, y, intColor, extColor, mass) {
+      
         this.x = x;
         this.y = y;
+        this.intColor = intColor;
+        this.extColor = extColor;
+        this.mass = mass;
 
     }
 

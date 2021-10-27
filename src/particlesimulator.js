@@ -12,16 +12,28 @@ class ParticleSimulator {
 
         // DOM Mapping
         this.pCnt = document.getElementById('pCnt');
-        this.startBtn = document.getElementById('start');
+        this.addBtn = document.getElementById('add');
+        this.stopBtn = document.getElementById('stop');
 
         // DOM - Canvas
         this.w = document.getElementById('window');
         this.w.height = this.wSide;
         this.w.width = this.wSide;
 
+        // Particles
+        this.p = [];
+        this.totalP = 0;
+
+        // States
+        this.run = true;
+        this.tick = true;
+        this.lastTick = 0;
+
         this.drawBackground();
         
         this.registerEventListeners();
+
+        this.runSimulation();
     }
 
     drawBackground() {
@@ -32,56 +44,117 @@ class ParticleSimulator {
         this.wCtx.fillStyle = 'indigo';
         this.wCtx.fillRect(0, 0, this.wSide, this.wSide);
 
-        // Black Hole
-        this.wCtx.beginPath();
-        this.wCtx.arc(this.wCtr, this.wCtr, 10, 0, this.fullCircle, true);
-        this.wCtx.strokeStyle = 'orange';
-        this.wCtx.lineWidth = 5;
-        this.wCtx.stroke();
-        this.wCtx.fillStyle = 'black';
-        this.wCtx.fill();
-
     }
 
     registerEventListeners() {
 
-        this.runSimulation = this.runSimulation.bind(this);
-        this.startBtn.addEventListener('click', this.runSimulation);
+        this.addParticles = this.addParticles.bind(this);
+        this.addBtn.addEventListener('click', this.addParticles);
+
+        this.stopBtn.addEventListener('click', this.stopSim);
 
     }
 
     runSimulation() {
 
-        console.log("Running simulation loop");
+        console.log("running simulation");  // Debub
 
-        let pCnt = document.getElementById('pCnt');
-        let p = [];
+        // Add Black Hole to Particles
+        this.p.push(new Particle(
+            this.wSide / 2,
+            this.wSide / 2,
+            'black', 'orange',
+            10
+        ));
 
-        for(let i = 0; i < pCnt.value; i++) {
-            p.push(new Particle(
-                Math.floor(Math.random() * this.wSide), 
-                Math.floor(Math.random() * this.wSide)));
-    
-            this.drawParticle(p[i]);
-        }
+        this.drawParticle(this.p[0]);
+        this.totalP++;
+
+        // Event: Player adds particles
 
         // Loop goes here
-        // Calculate the force of gravity on each particle
-        // Using Newton's law
-        // Remove old particles and draw new particles
+        // Problem:  The click for stopping the sim isn't happening...is that because the event can't be called because this loop has all the threads?
+        while(this.run) 
+        {
+            if(this.tick) {
+
+                // Do stuff
+                console.log('doing stuff');
+
+                // Update particle positions per interval
+                // a vector for every particle
+                // Calculate the new position of each particle given a time interval
+                // Remove old particles and draw new particles
+
+                this.tick = false;
+            }
+
+            if(this.isDecisecond()) {
+                this.tick = true;
+            }
+
+        }
+
+    }
+
+    isDecisecond() {
+
+        let now = new Date().getMilliseconds();
+        if (now < this.lastTick) {
+            this.lastTick -= 1000;
+        }
+
+        if(now > this.lastTick + 100) {
+            this.lastTick = now;
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    addParticles() {
+
+        console.log('add particles'); // Debub
+
+        let limit = this.totalP + parseInt(this.pCnt.value);
+
+        for(let i = this.totalP; i < limit; i++) {
+            this.p.push(new Particle(
+                Math.floor(Math.random() * this.wSide), 
+                Math.floor(Math.random() * this.wSide),
+                'blue', 'lightgreen',
+                1
+            ));
+    
+            this.drawParticle(this.p[i]);
+            this.totalP++;
+        }
 
     }
 
     drawParticle(p) {
 
         this.wCtx.beginPath();
-        this.wCtx.arc(p.x, p.y, 4, 0, this.fullCircle, true);
-        this.wCtx.strokeStyle = 'lightgreen';
+        this.wCtx.arc(
+            p.x, p.y, 
+            p.mass, 
+            0, this.fullCircle, 
+            true
+        );
+        this.wCtx.strokeStyle = p.extColor;
         this.wCtx.lineWidth = 5;
         this.wCtx.stroke();
-        this.wCtx.fillStyle = 'blue';
+        this.wCtx.fillStyle = p.intColor;
         this.wCtx.fill();
 
+    }
+
+    stopSim() {
+
+        console.log('stopping sim'); // Debub
+
+        this.run = false;
     }
 }
 
