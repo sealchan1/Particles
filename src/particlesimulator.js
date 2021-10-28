@@ -50,8 +50,9 @@ class ParticleSimulator {
     registerEventListeners() {
 
         this.addParticles = this.addParticles.bind(this);
-        this.addBtn.addEventListener('click', this.addParticles);
+        this.stopSim = this.stopSim.bind(this);
 
+        this.addBtn.addEventListener('click', this.addParticles);
         this.stopBtn.addEventListener('click', this.stopSim);
 
     }
@@ -123,6 +124,7 @@ class ParticleSimulator {
     stopSim() {
 
         console.log('stopping sim'); // Debub
+        console.log(this.sim); // Debub
 
         window.clearInterval(this.sim);
     }
