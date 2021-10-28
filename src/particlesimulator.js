@@ -28,6 +28,7 @@ class ParticleSimulator {
         this.run = true;
         this.tick = true;
         this.lastTick = 0;
+        this.sim;
 
         this.drawBackground();
         
@@ -73,46 +74,15 @@ class ParticleSimulator {
         // Event: Player adds particles
 
         // Loop goes here
-        // Problem:  The click for stopping the sim isn't happening...is that because the event can't be called because this loop has all the threads?
-        while(false) // this.run
-        {
-            if(this.tick) {
-
-                // Do stuff
-                console.log('doing stuff');
-
-                // Update particle positions per interval
-                // a vector for every particle
-                // Calculate the new position of each particle given a time interval
-                // Remove old particles and draw new particles
-
-                this.tick = false;
-            }
-
-            if(this.isDecisecond()) {
-                this.tick = true;
-            }
-
-        }
+        this.sim = window.setInterval(this.updateParticles, 100);
 
     }
 
-    isDecisecond() {
+    updateParticles() {
 
-        let now = new Date().getMilliseconds();
-        if (now < this.lastTick) {
-            this.lastTick -= 1000;
-        }
+        console.log('update particles');
 
-        if(now > this.lastTick + 100) {
-            this.lastTick = now;
-            return true;
-        }
-        else {
-            return false;
-        }
     }
-
     addParticles() {
 
         console.log('add particles'); // Debub
@@ -154,7 +124,7 @@ class ParticleSimulator {
 
         console.log('stopping sim'); // Debub
 
-        this.run = false;
+        window.clearInterval(this.sim);
     }
 }
 
