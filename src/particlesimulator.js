@@ -9,6 +9,7 @@ class ParticleSimulator {
         this.wSide = 360;
         this.wCtr = this.wSide / 2;
         this.fullCircle = Math.PI * 2;
+        this.timeInterval = 100; // milliseconds
 
         // DOM Mapping
         this.pCnt = document.getElementById('pCnt');
@@ -30,6 +31,7 @@ class ParticleSimulator {
         this.lastTick = 0;
         this.sim;
 
+        this.backgroundColor = 'indigo';
         this.drawBackground();
         
         this.registerEventListeners();
@@ -42,7 +44,7 @@ class ParticleSimulator {
         // Window content
         this.wCtx = this.w.getContext('2d');
         // Background
-        this.wCtx.fillStyle = 'indigo';
+        this.wCtx.fillStyle = this.backgroundColor;
         this.wCtx.fillRect(0, 0, this.wSide, this.wSide);
 
     }
@@ -51,6 +53,7 @@ class ParticleSimulator {
 
         this.addParticles = this.addParticles.bind(this);
         this.stopSim = this.stopSim.bind(this);
+        this.updateParticles = this.updateParticles.bind(this);
 
         this.addBtn.addEventListener('click', this.addParticles);
         this.stopBtn.addEventListener('click', this.stopSim);
@@ -69,21 +72,36 @@ class ParticleSimulator {
             10
         ));
 
-        this.drawParticle(this.p[0]);
+        this.drawParticle(this.p[0], true);
         this.totalP++;
 
         // Event: Player adds particles
 
         // Loop goes here
-        this.sim = window.setInterval(this.updateParticles, 100);
+        this.sim = window.setInterval(this.updateParticles, this.timeInterval);
 
     }
 
     updateParticles() {
 
-        console.log('update particles');
+        console.log('update particles');  // Debub
 
+        // Calculate forces on each particle by black hole
+        if(this.p) {
+            for(let i = 1; i < this.p.length; i++) {
+                this.p[i].setNewPositionWithGravitationalForce(this.p[0]);
+            }
+
+            for(let i = 1; i < this.p.length; i++) {
+                this.drawParticle(this.p[i], false);
+
+                this.p[i].move();
+
+                this.drawParticle(this.p[i], true);
+            }
+        }
     }
+
     addParticles() {
 
         console.log('add particles'); // Debub
@@ -95,16 +113,18 @@ class ParticleSimulator {
                 Math.floor(Math.random() * this.wSide), 
                 Math.floor(Math.random() * this.wSide),
                 'blue', 'lightgreen',
-                1
+                1,
+                (Math.random() * 1 - 0.5) / this.timeInterval, 
+                (Math.random() * 1 - 0.5) / this.timeInterval
             ));
     
-            this.drawParticle(this.p[i]);
+            this.drawParticle(this.p[i], true);
             this.totalP++;
         }
 
     }
 
-    drawParticle(p) {
+    drawParticle(p, show) {
 
         this.wCtx.beginPath();
         this.wCtx.arc(
@@ -113,18 +133,24 @@ class ParticleSimulator {
             0, this.fullCircle, 
             true
         );
-        this.wCtx.strokeStyle = p.extColor;
+        
+        if(show) {
+            this.wCtx.strokeStyle = p.extColor;
+            this.wCtx.fillStyle = p.intColor;
+        }
+        else {
+            this.wCtx.strokeStyle = this.backgroundColor;
+            this.wCtx.fillStyle = this.backgroundColor;
+        }
+
         this.wCtx.lineWidth = 5;
         this.wCtx.stroke();
-        this.wCtx.fillStyle = p.intColor;
         this.wCtx.fill();
-
     }
 
     stopSim() {
 
         console.log('stopping sim'); // Debub
-        console.log(this.sim); // Debub
 
         window.clearInterval(this.sim);
     }
